@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星星阅读屋</title>
+
+  <style>
+    :root {
+      --pink: #ff8fab;
+      --pink-dark: #e85d82;
+      --yellow: #ffd166;
+      --blue: #8ed8ff;
+      --green: #9bdc9b;
+      --purple: #b9a7ff;
+      --cream: #fff9ed;
+      --brown: #593f35;
+      --muted: #977b70;
+      --white: #ffffff;
+      --border: #f1d9ce;
+      --shadow: 0 10px 25px rgba(146, 91, 72, .14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--cream);
+      color: var(--brown);
+      font-family:
+        "Microsoft YaHei",
+        "Noto Sans SC",
+        system-ui,
+        sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      padding: 10px 6vw;
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 2px solid #ffe4d8;
+      box-shadow: 0 4px 16px rgba(160, 94, 76, .08);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--pink-dark);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .brand-icon {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      place-items: center;
+      border-radius: 15px;
+      background: var(--yellow);
+      color: #fff;
+      font-size: 27px;
+      animation: soft-bounce 2.2s infinite ease-in-out;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .nav-button {
+      min-height: 42px;
+      padding: 0 13px;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: #fff0f4;
+      color: var(--pink-dark);
+    }
+
+    .star-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 42px;
+      padding: 0 13px;
+      border-radius: 999px;
+      background: #fff6cf;
+      color: #bf871e;
+      font-weight: 900;
+    }
+
+    .page {
+      min-height: calc(100vh - 72px);
+    }
+
+    .home {
+      position: relative;
+      min-height: calc(100vh - 72px);
+      padding: 52px 6vw 70px;
+      overflow: hidden;
+      background: #fff3dc;
+    }
+
+    .home-inner {
+      position: relative;
+      z-index: 2;
+      width: min(1060px, 100%);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .home h1 {
+      max-width: 720px;
+      margin: 20px auto 14px;
+      color: var(--pink-dark);
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: 1.12;
+    }
+
+    .home-lead {
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.8;
+    }
+
+    .welcome-label {
+      display: inline-block;
+      padding: 9px 18px;
+      border-radius: 999px;
+      background: #fff;
+      color: #d28b35;
+      font-size: 16px;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+      animation: float 3s infinite ease-in-out;
+    }
+
+    .home-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 13px;
+      margin-top: 28px;
+    }
+
+    .main-button {
+      min-height: 52px;
+      padding: 0 24px;
+      border-radius: 17px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 7px 0 #db6d8c, var(--shadow);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .main-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 0 #db6d8c, var(--shadow);
+    }
+
+    .main-button:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #db6d8c;
+    }
+
+    .main-button.yellow {
+      background: var(--yellow);
+      color: #805c24;
+      box-shadow: 0 7px 0 #e2ad42, var(--shadow);
+    }
+
+    .main-button.blue {
+      background: var(--blue);
+      color: #306d8a;
+      box-shadow: 0 7px 0 #63b5df, var(--shadow);
+    }
+
+    .book-scene {
+      position: relative;
+      width: min(580px, 90vw);
+      height: 240px;
+      margin: 46px auto 0;
+    }
+
+    .big-book {
+      position: absolute;
+      left: 50%;
+      bottom: 25px;
+      width: 245px;
+      height: 125px;
+      border-radius: 20px 20px 12px 12px;
+      background: var(--pink);
+      box-shadow: 0 12px 0 #df7290, 0 18px 28px rgba(126, 76, 65, .15);
+      transform: translateX(-50%) rotate(-4deg);
+      animation: book-wiggle 4s infinite ease-in-out;
+    }
+
+    .big-book::before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 5px;
+      height: 100%;
+      background: rgba(255, 255, 255, .42);
+      content: "";
+    }
+
+    .big-book::after {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      color: #fff;
+      content: "★";
+      font-size: 42px;
+      transform: translateX(-50%);
+    }
+
+    .character {
+      position: absolute;
+      bottom: 105px;
+      left: 50%;
+      display: grid;
+      width: 88px;
+      height: 88px;
+      place-items: center;
+      border: 8px solid #fff;
+      border-radius: 50%;
+      background: var(--yellow);
+      font-size: 43px;
+      transform: translateX(-50%);
+      animation: character-bounce 2s infinite ease-in-out;
+    }
+
+    .floating-word {
+      position: absolute;
+      color: var(--pink-dark);
+      font-size: 34px;
+      font-weight: 900;
+      animation: float 3s infinite ease-in-out;
+    }
+
+    .word-one {
+      top: 18px;
+      left: 10%;
+    }
+
+    .word-two {
+      top: 48px;
+      right: 9%;
+      color: #6cb7d7;
+      animation-delay: .8s;
+    }
+
+    .word-three {
+      bottom: 0;
+      left: 17%;
+      color: #c69be2;
+      animation-delay: 1.4s;
+    }
+
+    .cloud {
+      position: absolute;
+      z-index: 1;
+      color: #fff;
+      font-size: 76px;
+      opacity: .78;
+      animation: cloud-move 18s linear infinite;
+    }
+
+    .cloud-one {
+      top: 80px;
+      left: -100px;
+    }
+
+    .cloud-two {
+      top: 250px;
+      left: -220px;
+      font-size: 55px;
+      animation-duration: 24s;
+      animation-delay: 4s;
+    }
+
+    .sparkle {
+      position: absolute;
+      z-index: 1;
+      color: var(--yellow);
+      font-size: 24px;
+      animation: sparkle 1.8s infinite ease-in-out;
+    }
+
+    .sparkle-a { top: 17%; left: 25%; }
+    .sparkle-b { top: 28%; right: 24%; animation-delay: .5s; }
+    .sparkle-c { bottom: 18%; right: 16%; animation-delay: 1s; }
+    .sparkle-d { bottom: 15%; left: 25%; animation-delay: 1.4s; }
+
+    .content-page {
+      width: min(1120px, 90vw);
+      margin: 0 auto;
+      padding: 42px 0 90px;
+    }
+
+    .page-heading {
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      color: var(--pink-dark);
+      font-size: clamp(32px, 5vw, 50px);
+    }
+
+    .page-heading p {
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .search {
+      width: min(360px, 100%);
+      min-height: 46px;
+      padding: 0 16px;
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      outline: none;
+      background: #fff;
+      color: var(--brown);
+    }
+
+    .search:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(255, 143, 171, .17);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .book-card {
+      display: flex;
+      min-height: 245px;
+      padding: 20px;
+      flex-direction: column;
+      border: 2px solid var(--border);
+      border-radius: 21px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      animation: card-in .45s both;
+      transition: transform .2s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px) rotate(1deg);
+    }
+
+    .book-label {
+      display: inline-flex;
+      align-self: flex-start;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: #fff1c6;
+      color: #b97a24;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .poem-card .book-label {
+      background: #eee7ff;
+      color: #7d64bd;
+    }
+
+    .book-card h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.4;
+    }
+
+    .book-card p {
+      display: -webkit-box;
+      overflow: hidden;
+      margin: 10px 0 18px;
+      color: var(--muted);
+      line-height: 1.75;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .read-button {
+      width: 100%;
+      min-height: 44px;
+      margin-top: auto;
+      border-radius: 13px;
+      background: var(--pink);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .read-button:hover {
+      background: var(--pink-dark);
+    }
+
+    .future-page {
+      position: relative;
+      min-height: calc(100vh - 72px);
+      padding: 46px 6vw 100px;
+      overflow: hidden;
+      background: #e9f8ff;
+    }
+
+    .future-inner {
+      position: relative;
+      z-index: 2;
+      width: min(980px, 100%);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .future-title {
+      margin: 0;
+      color: #398eb7;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 1.2;
+    }
+
+    .future-text {
+      max-width: 700px;
+      margin: 18px auto 0;
+      color: #668b9b;
+      font-size: 20px;
+      line-height: 1.9;
+    }
+
+    .future-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 38px;
+    }
+
+    .future-card {
+      padding: 25px 20px;
+      border: 2px solid #c6eaf6;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: var(--shadow);
+      animation: card-in .5s both;
+    }
+
+    .future-card:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .future-card:nth-child(3) {
+      animation-delay: .3s;
+    }
+
+    .future-icon {
+      font-size: 48px;
+      animation: soft-bounce 2.2s infinite ease-in-out;
+    }
+
+    .future-card h3 {
+      margin: 13px 0 8px;
+      color: #398eb7;
+      font-size: 22px;
+    }
+
+    .future-card p {
+      margin: 0;
+      color: #7192a0;
+      line-height: 1.8;
+    }
+
+    .future-stars {
+      position: absolute;
+      color: #f8bb45;
+      font-size: 27px;
+      animation: sparkle 2s infinite ease-in-out;
+    }
+
+    .future-stars.one { top: 10%; left: 10%; }
+    .future-stars.two { top: 20%; right: 13%; animation-delay: .5s; }
+    .future-stars.three { bottom: 14%; left: 15%; animation-delay: 1s; }
+    .future-stars.four { bottom: 19%; right: 17%; animation-delay: 1.4s; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 60px 20px;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      background: #fff;
+      color: var(--muted);
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .chat-toggle {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 40;
+      display: grid;
+      width: 66px;
+      height: 66px;
+      place-items: center;
+      border: 5px solid #fff;
+      border-radius: 50%;
+      background: var(--pink);
+      color: #fff;
+      font-size: 31px;
+      box-shadow: 0 8px 22px rgba(190, 83, 113, .3);
+      animation: chat-pulse 2.1s infinite;
+    }
+
+    .chat-panel {
+      position: fixed;
+      right: 22px;
+      bottom: 100px;
+      z-index: 39;
+      display: flex;
+      width: min(350px, calc(100vw - 34px));
+      height: 440px;
+      flex-direction: column;
+      overflow: hidden;
+      border: 2px solid #ffd9e3;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 14px 38px rgba(112, 62, 79, .25);
+      transform: translateY(15px) scale(.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .chat-panel.open {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 17px;
+      background: #fff0f4;
+      color: var(--pink-dark);
+      font-weight: 900;
+    }
+
+    .chat-face {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--yellow);
+      font-size: 23px;
+    }
+
+    .chat-messages {
+      display: flex;
+      flex: 1;
+      padding: 15px;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      background: #fffdfc;
+    }
+
+    .message {
+      max-width: 84%;
+      padding: 10px 13px;
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #fff0c9;
+      color: #80652e;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #ffe0e9;
+      color: #9d4c65;
+    }
+
+    .quick-questions {
+      display: flex;
+      gap: 6px;
+      padding: 9px 12px 0;
+      overflow-x: auto;
+      background: #fff;
+    }
+
+    .quick-question {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid #ffd4df;
+      border-radius: 999px;
+      background: #fff7f9;
+      color: var(--pink-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 7px;
+      padding: 12px;
+      border-top: 1px solid #f5e2e5;
+      background: #fff;
+    }
+
+    .chat-input {
+      min-width: 0;
+      flex: 1;
+      min-height: 40px;
+      padding: 0 11px;
+      border: 1px solid #f0ccd7;
+      border-radius: 11px;
+      outline: none;
+    }
+
+    .send-button {
+      width: 48px;
+      border-radius: 11px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .reader-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      background: rgba(54, 39, 34, .48);
+    }
+
+    .reader-backdrop.open {
+      display: block;
+    }
+
+    .reader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 51;
+      display: flex;
+      width: min(720px, 92vw);
+      max-height: 88vh;
+      padding: 25px;
+      flex-direction: column;
+      border: 3px solid #ffe0cc;
+      border-radius: 23px;
+      background: #fffdf8;
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .25);
+      transform: translate(-50%, -45%) scale(.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+    }
+
+    .reader.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reader-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .reader-title {
+      margin: 0;
+      color: var(--pink-dark);
+      font-size: 30px;
+    }
+
+    .reader-type {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .close-button {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 12px;
+      background: #fff0d8;
+      color: #96683e;
+      font-size: 25px;
+    }
+
+    .reader-content {
+      overflow-y: auto;
+      margin: 22px 0;
+      padding-right: 8px;
+      color: var(--brown);
+      font-size: 20px;
+      line-height: 2;
+      white-space: pre-line;
+    }
+
+    .reader-footer {
+      padding-top: 15px;
+      border-top: 2px solid #f7e6da;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .reader-footer strong {
+      color: var(--pink-dark);
+      font-size: 18px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-11px); }
+    }
+
+    @keyframes soft-bounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-7px) rotate(3deg); }
+    }
+
+    @keyframes character-bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    @keyframes book-wiggle {
+      0%, 100% { transform: translateX(-50%) rotate(-4deg); }
+      50% { transform: translateX(-50%) rotate(4deg); }
+    }
+
+    @keyframes cloud-move {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 350px)); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: .4; transform: scale(.8) rotate(0); }
+      50% { opacity: 1; transform: scale(1.25) rotate(18deg); }
+    }
+
+    @keyframes card-in {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes chat-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    @media (max-width: 900px) {
+      .nav-button {
+        padding: 0 8px;
+        font-size: 13px;
+      }
+
+      .book-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .future-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar {
+        align-items: flex-start;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 10px 5vw;
+      }
+
+      .nav {
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-button {
+        flex: 1;
+      }
+
+      .page {
+        min-height: calc(100vh - 125px);
+      }
+
+      .home {
+        min-height: calc(100vh - 125px);
+        padding-top: 42px;
+      }
+
+      .book-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .home-lead,
+      .future-text {
+        font-size: 17px;
+      }
+
+      .reader {
+        padding: 19px;
+      }
+
+      .reader-title {
+        font-size: 25px;
+      }
+
+      .reader-content {
+        font-size: 18px;
+      }
+
+      .chat-toggle {
+        right: 15px;
+        bottom: 15px;
+      }
+
+      .chat-panel {
+        right: 15px;
+        bottom: 91px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">★</span>
+      <span>星星阅读屋</span>
+    </div>
+
+    <nav class="nav" aria-label="主菜单">
+      <button class="nav-button active" data-page="home">首页</button>
+      <button class="nav-button" data-page="stories">故事</button>
+      <button class="nav-button" data-page="poems">诗歌</button>
+      <button class="nav-button" data-page="future">未来小课堂</button>
+    </nav>
+
+    <div class="star-box">
+      <span>★</span>
+      <span id="starCount">0</span>
+    </div>
+  </header>
+
+  <main id="pageContainer"></main>
+
+  <button class="chat-toggle" id="chatToggle" aria-label="打开阅读小助手" title="阅读小助手">
+    💬
+  </button>
+
+  <section class="chat-panel" id="chatPanel" aria-label="阅读小助手">
+    <div class="chat-header">
+      <span class="chat-face">😊</span>
+      <span>小星星阅读助手</span>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot">
+        你好呀！我是小星星。你想听故事、读诗歌，还是想知道为什么要读书呢？
+      </div>
+    </div>
+
+    <div class="quick-questions">
+      <button class="quick-question" data-question="推荐故事">推荐故事</button>
+      <button class="quick-question" data-question="为什么要读书">为什么要读书</button>
+      <button class="quick-question" data-question="我不想读书">我不想读书</button>
+    </div>
+
+    <form class="chat-form" id="chatForm">
+      <input
+        class="chat-input"
+        id="chatInput"
+        placeholder="和小星星说句话"
+        maxlength="80"
+        autocomplete="off"
+      >
+      <button class="send-button" type="submit" aria-label="发送">➤</button>
+    </form>
+  </section>
+
+  <div class="reader-backdrop" id="readerBackdrop"></div>
+
+  <section class="reader" id="reader" aria-label="阅读窗口">
+    <div class="reader-header">
+      <div>
+        <h2 class="reader-title" id="readerTitle"></h2>
+        <p class="reader-type" id="readerType"></p>
+      </div>
+
+      <button class="close-button" id="closeReader" aria-label="关闭阅读窗口">
+        ×
+      </button>
+    </div>
+
+    <div class="reader-content" id="readerContent"></div>
+
+    <div class="reader-footer">
+      阅读时间：
+      <strong id="timerText">00:00</strong>
+      <span id="rewardText">阅读满 1 分钟可以获得 1 颗星星</span>
+    </div>
+  </section>
+
+  <script>
+    const stories = [
+      {
+        title: "会发光的种子",
+        content: "小禾把一粒种子种在窗台上。每天清晨，她为它浇水，晚上对它说一句悄悄话。许多天过去，种子终于长出一片银色叶子。叶子不会照亮整座城市，却能在最需要的时候，为迷路的人指明回家的方向。小禾明白，耐心做好一件小事，也可以带来温柔的改变。"
+      },
+      {
+        title: "云朵邮差",
+        content: "云朵邮差每天骑着风，把大家写给天空的信送到远方。一天，一封没有地址的信落在山谷里。邮差询问溪流、树木和小鸟，终于找到了正在等待的孩子。孩子打开信，里面只有一句话：你今天也做得很好。那天的云变得特别柔软。"
+      },
+      {
+        title: "森林里的小钟",
+        content: "森林深处有一只小钟，它不会报时间，只在有人需要帮助时轻轻响起。小鹿找不到回家的路，小钟响了；小松鼠的果实掉进石缝，小钟也响了。后来，森林里的朋友学会了互相帮助，小钟的声音变得越来越轻。"
+      },
+      {
+        title: "蓝色的雨靴",
+        content: "小满有一双蓝色雨靴。下雨时，她穿着雨靴踩过水洼，把屋檐下的小蜗牛送到草地。雨停以后，雨靴里装满了小石子和叶片。小满没有责怪它们，因为她知道，每一次出门都可能遇到新的朋友。"
+      },
+      {
+        title: "月亮借来的书",
+        content: "月亮总觉得夜晚太安静，于是向山谷借来一本故事书。她读到勇敢的船长，也读到会唱歌的花。读着读着，森林里的动物都睡着了。第二天，月亮还回书，并在最后一页夹了一片星光。从那以后，拿起这本书的人，心里都会亮一点。"
+      },
+      {
+        title: "小鹿的灯笼",
+        content: "夜里，小鹿提着灯笼走过森林。灯笼的光很小，只能照亮脚边的一小段路。小鹿仍然一步一步向前，因为它知道，只要愿意先照亮脚下，就不会一直停在黑暗里。后来，许多朋友跟在它身后，森林小路变得明亮起来。"
+      },
+      {
+        title: "纸船的旅行",
+        content: "小雨折了一只纸船，放进小溪。纸船经过石桥、花园和一片芦苇。它没有去遥远的海，却把沿途的风景带回了小雨心里。旅行不一定要走得很远，只要认真看见路上的美好，也是一段珍贵的旅程。"
+      },
+      {
+        title: "星星修理铺",
+        content: "小星星修理铺专门修补失去光芒的星星。有的星星需要勇气，有的需要休息，还有的只是忘记了自己曾经照亮过别人。修好以后，它们回到夜空，大小虽然不同，却都认真发着自己的光。"
+      }
+    ];
+
+    const poems = [
+      {
+        title: "晨光",
+        content: "一束光落在窗台\n把昨夜的梦轻轻收好\n鸟儿翻开清晨的第一页\n风从花朵之间经过\n带来今天的问候"
+      },
+      {
+        title: "小雨",
+        content: "小雨敲着屋檐\n一声，又一声\n把灰色的天空\n写成柔软的旋律\n落进安静的下午"
+      },
+      {
+        title: "星河",
+        content: "抬头看见星河\n每一颗光都不喧哗\n它们隔着遥远的夜色\n告诉我们\n微小也可以闪耀"
+      },
+      {
+        title: "春天的信",
+        content: "春天写来一封信\n夹着嫩叶和花香\n我把信打开\n整个院子\n便开始变绿"
+      },
+      {
+        title: "月光",
+        content: "月光落在书页上\n像一枚安静的书签\n提醒我慢慢阅读\n也提醒我\n世界仍然温柔"
+      },
+      {
+        title: "萤火",
+        content: "萤火在草丛间亮起\n一颗，两颗，三颗\n它们没有巨大的光\n却让黑夜知道\n这里有人在守望"
+      },
+      {
+        title: "小小的愿望",
+        content: "愿望不必很大\n可以是一盏灯\n一杯热水\n一个拥抱\n或是今天比昨天更勇敢"
+      },
+      {
+        title: "新芽",
+        content: "新芽很小\n却已经准备好\n推开厚厚的泥土\n春天并非突然来到\n它一直在努力靠近"
+      }
+    ];
+
+    const allBooks = [
+      ...stories.map((item, index) => ({
+        ...item,
+        id: "story-" + index,
+        type: "故事",
+        category: "stories"
+      })),
+      ...poems.map((item, index) => ({
+        ...item,
+        id: "poem-" + index,
+        type: "诗歌",
+        category: "poems"
+      }))
+    ];
+
+    const state = {
+      stars: Number(localStorage.getItem("readingStars") || 0),
+      currentPage: "home",
+      search: "",
+      activeBook: null,
+      seconds: 0,
+      timer: null
+    };
+
+    const pageContainer = document.getElementById("pageContainer");
+    const starCount = document.getElementById("starCount");
+    const reader = document.getElementById("reader");
+    const readerBackdrop = document.getElementById("readerBackdrop");
+    const readerTitle = document.getElementById("readerTitle");
+    const readerType = document.getElementById("readerType");
+    const readerContent = document.getElementById("readerContent");
+    const timerText = document.getElementById("timerText");
+    const rewardText = document.getElementById("rewardText");
+    const chatPanel = document.getElementById("chatPanel");
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+
+    function updateStars() {
+      starCount.textContent = state.stars;
+      localStorage.setItem("readingStars", state.stars);
+    }
+
+    function renderHome() {
+      pageContainer.innerHTML = `
+        <section class="home">
+          <span class="cloud cloud-one">☁</span>
+          <span class="cloud cloud-two">☁</span>
+          <span class="sparkle sparkle-a">✦</span>
+          <span class="sparkle sparkle-b">✦</span>
+          <span class="sparkle sparkle-c">✦</span>
+          <span class="sparkle sparkle-d">✦</span>
+
+          <div class="home-inner">
+            <span class="welcome-label">欢迎来到快乐阅读屋！</span>
+            <h1>读一个故事，<br>点亮一颗小星星</h1>
+            <p class="home-lead">
+              书里有会唱歌的风、会跳舞的树叶，
+              还有等待你发现的新朋友。
+            </p>
+
+            <div class="home-actions">
+              <button class="main-button" data-go="stories">📖 读故事</button>
+              <button class="main-button yellow" data-go="poems">🌼 读诗歌</button>
+              <button class="main-button blue" data-go="future">🚀 看看未来</button>
+            </div>
+
+            <div class="book-scene">
+              <span class="floating-word word-one">想象</span>
+              <span class="floating-word word-two">发现</span>
+              <span class="floating-word word-three">成长</span>
+              <div class="character">😊</div>
+              <div class="big-book"></div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderLibrary(category) {
+      const isStory = category === "stories";
+      const title = isStory ? "故事小森林" : "诗歌小花园";
+      const subtitle = isStory
+        ? "走进故事里，认识勇敢、善良和有趣的新朋友。"
+        : "读一首短诗，让心情像小花一样慢慢开放。";
+
+      pageContainer.innerHTML = `
+        <section class="content-page">
+          <div class="page-heading">
+            <h2>${isStory ? "📚 " : "🌼 "}${title}</h2>
+            <p>${subtitle}</p>
+          </div>
+
+          <div class="toolbar">
+            <input
+              class="search"
+              id="searchInput"
+              type="search"
+              placeholder="找一找喜欢的作品"
+              aria-label="搜索作品"
+            >
+          </div>
+
+          <div class="book-grid" id="bookGrid"></div>
+        </section>
+      `;
+
+      document.getElementById("searchInput").addEventListener("input", event => {
+        state.search = event.target.value;
+        renderBooks(category);
+      });
+
+      renderBooks(category);
+    }
+
+    function renderBooks(category) {
+      const grid = document.getElementById("bookGrid");
+      if (!grid) return;
+
+      const keyword = state.search.trim().toLowerCase();
+
+      const books = allBooks.filter(book => {
+        const matchesCategory = book.category === category;
+        const matchesSearch =
+          !keyword ||
+          book.title.toLowerCase().includes(keyword) ||
+          book.content.toLowerCase().includes(keyword);
+
+        return matchesCategory && matchesSearch;
+      });
+
+      if (!books.length) {
+        grid.innerHTML = `<div class="empty">没有找到作品，再试试别的名字吧！</div>`;
+        return;
+      }
+
+      grid.innerHTML = books.map((book, index) => `
+        <article class="book-card ${book.category === "poems" ? "poem-card" : ""}" style="animation-delay: ${index * 60}ms">
+          <span class="book-label">${book.type}</span>
+          <h3>${book.title}</h3>
+          <p>${book.content}</p>
+          <button class="read-button" data-book-id="${book.id}">
+            ${book.category === "stories" ? "打开故事" : "朗读诗歌"}
+          </button>
+        </article>
+      `).join("");
+    }
+
+    function renderFuture() {
+      pageContainer.innerHTML = `
+        <section class="future-page">
+          <span class="future-stars one">★</span>
+          <span class="future-stars two">✦</span>
+          <span class="future-stars three">★</span>
+          <span class="future-stars four">✦</span>
+
+          <div class="future-inner">
+            <h2 class="future-title">书本会带你去未来！</h2>
+            <p class="future-text">
+              每读一本书，你都会多认识一个朋友、多学会一个想法，
+              也会发现一个新的自己。小小的阅读，会慢慢变成大大的梦想。
+            </p>
+
+            <div class="future-cards">
+              <article class="future-card">
+                <div class="future-icon">🔭</div>
+                <h3>读书会发现</h3>
+                <p>书里藏着许多有趣的知识，帮助你发现身边的大世界。</p>
+              </article>
+
+              <article class="future-card">
+                <div class="future-icon">🧠</div>
+                <h3>读书会思考</h3>
+                <p>故事会带来问题，也会邀请你想一想自己的答案。</p>
+              </article>
+
+              <article class="future-card">
+                <div class="future-icon">🌱</div>
+                <h3>读书会成长</h3>
+                <p>每天读一点点，就像给心里种下一颗会长大的种子。</p>
+              </article>
+            </div>
+
+            <div class="home-actions">
+              <button class="main-button" data-go="stories">开始读一本书</button>
+              <button class="main-button yellow" data-go="poems">听一首小诗</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function showPage(page) {
+      state.currentPage = page;
+      state.search = "";
+
+      document.querySelectorAll(".nav-button").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === page);
+      });
+
+      if (page === "home") {
+        renderHome();
+      } else if (page === "stories") {
+        renderLibrary("stories");
+      } else if (page === "poems") {
+        renderLibrary("poems");
+      } else {
+        renderFuture();
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function formatTime(seconds) {
+      const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const rest = String(seconds % 60).padStart(2, "0");
+      return `${minutes}:${rest}`;
+    }
+
+    function openReader(book) {
+      state.activeBook = book;
+      state.seconds = 0;
+      timerText.textContent = "00:00";
+
+      const rewardKey = "rewarded-" + book.id;
+      const alreadyRewarded = localStorage.getItem(rewardKey) === "yes";
+
+      readerTitle.textContent = book.title;
+      readerType.textContent = book.type;
+      readerContent.textContent = book.content;
+
+      rewardText.textContent = alreadyRewarded
+        ? "这篇作品已经获得过阅读星星啦！"
+        : "认真阅读满 1 分钟，可以获得 1 颗星星。";
+
+      reader.classList.add("open");
+      readerBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+
+      clearInterval(state.timer);
+
+      if (!alreadyRewarded) {
+        state.timer = setInterval(() => {
+          state.seconds += 1;
+          timerText.textContent = formatTime(state.seconds);
+
+          if (state.seconds >= 60) {
+            clearInterval(state.timer);
+            localStorage.setItem(rewardKey, "yes");
+            state.stars += 1;
+            updateStars();
+            rewardText.textContent = "太棒啦！你获得了 1 颗阅读星星！";
+          }
+        }, 1000);
+      }
+    }
+
+    function closeReader() {
+      clearInterval(state.timer);
+      reader.classList.remove("open");
+      readerBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+      state.activeBook = null;
+    }
+
+    function addMessage(text, type) {
+      const message = document.createElement("div");
+      message.className = "message " + type;
+      message.textContent = text;
+      chatMessages.appendChild(message);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getBotReply(text) {
+      const value = text.toLowerCase();
+
+      if (value.includes("推荐") || value.includes("故事")) {
+        return "我推荐《会发光的种子》！它讲了一个耐心照顾小种子的故事，很温暖哦。";
+      }
+
+      if (value.includes("诗")) {
+        return "你可以去诗歌小花园读《晨光》或者《星河》，它们都很适合安静地读一读。";
+      }
+
+      if (value.includes("为什么") || value.includes("读书")) {
+        return "读书可以认识新朋友、学到新知识，还能让想象力长出小翅膀！";
+      }
+
+      if (value.includes("不想") || value.includes("累")) {
+        return "没关系呀！可以先只读一小段，或者和爸爸妈妈一起读。阅读应该是快乐的。";
+      }
+
+      if (value.includes("星星")) {
+        return "认真阅读满 1 分钟，就可以得到 1 颗星星。你已经很棒啦！";
+      }
+
+      return "我听见啦！你可以问我推荐故事、诗歌、阅读星星，或者为什么要读书。";
+    }
+
+    document.querySelectorAll(".nav-button").forEach(button => {
+      button.addEventListener("click", () => {
+        showPage(button.dataset.page);
+      });
+    });
+
+    document.addEventListener("click", event => {
+      const goButton = event.target.closest("[data-go]");
+      if (goButton) {
+        showPage(goButton.dataset.go);
+      }
+
+      const bookButton = event.target.closest("[data-book-id]");
+      if (bookButton) {
+        const book = allBooks.find(item => item.id === bookButton.dataset.bookId);
+        if (book) openReader(book);
+      }
+    });
+
+    document.getElementById("closeReader").addEventListener("click", closeReader);
+    readerBackdrop.addEventListener("click", closeReader);
+
+    document.getElementById("chatToggle").addEventListener("click", () => {
+      chatPanel.classList.toggle("open");
+    });
+
+    document.querySelectorAll(".quick-question").forEach(button => {
+      button.addEventListener("click", () => {
+        const question = button.dataset.question;
+        addMessage(question, "user");
+        setTimeout(() => addMessage(getBotReply(question), "bot"), 350);
+      });
+    });
+
+    document.getElementById("chatForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      chatInput.value = "";
+
+      setTimeout(() => {
+        addMessage(getBotReply(text), "bot");
+      }, 350);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeReader();
+        chatPanel.classList.remove("open");
+      }
+    });
+
+    updateStars();
+    showPage("home");
+  </script>
+</body>
+</html>
